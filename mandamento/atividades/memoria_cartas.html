@@ -1,0 +1,392 @@
+<html>
+
+<head>
+    <base href="." />
+    <title>Jogo da Memória - Os 10 Mandamentos</title>
+    <style>
+        :root {
+            --card-width: 320px;
+            /* Increased from 260px */
+            --card-height: 300px;
+            /* Increased from 200px */
+            --primary-color: #4a90e2;
+            --secondary-color: #f64747;
+            --background-color: #f5f6fa;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-color);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
+            gap: 20px;
+            perspective: 1000px;
+            padding: 20px;
+        }
+
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            transform: rotateY(180deg);
+            animation: celebration 1s ease-in-out;
+        }
+
+        .card.matched .front {
+            background: #4CAF50;
+            color: white;
+            transition: background-color 0.5s ease;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .front {
+            background: white;
+            transform: rotateY(180deg);
+            font-size: 1em;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        .back {
+            background: linear-gradient(135deg, var(--primary-color), #74b9ff);
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .score {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: modal-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes modal-appear {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes celebration {
+            0% {
+                transform: rotateY(180deg) scale(1);
+            }
+
+            50% {
+                transform: rotateY(180deg) scale(1.1);
+            }
+
+            100% {
+                transform: rotateY(180deg) scale(1);
+            }
+        }
+
+        @keyframes wrongMatch {
+            0% {
+                background: white;
+            }
+
+            50% {
+                background: #ff4444;
+            }
+
+            100% {
+                background: white;
+            }
+        }
+
+        .card.wrong .front {
+            animation: wrongMatch 0.5s ease;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                /* Changed to single column for better mobile readability */
+            }
+
+            h1 {
+                font-size: 1.8em;
+                text-align: center;
+            }
+
+            :root {
+                --card-width: 300px;
+                /* Increased from 180px */
+                --card-height: 280px;
+                /* Increased from 160px */
+
+            }
+
+            .front {
+                font-size: 0.85em;
+                /* Slightly smaller font for mobile */
+                line-height: 1.4;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Jogo da Memória - Os 10 Mandamentos</h1>
+    <div class="score">Tentativas: <span id="attempts">0</span></div>
+    <div class="game-container" id="gameContainer"></div>
+
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <h2>Parabéns! 🎉</h2>
+            <p>Você completou o jogo em <span id="finalAttempts">0</span> tentativas!</p>
+            <button onclick="resetGame()">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        const mandamentos = [
+            {
+                numero: "1º Mandamento",
+                significado: "Eu sou o Senhor, teu Deus. Não terás outros deuses diante de mim. — O que significa isso? Devemos temer e amar a Deus e confiar nele acima de todas as coisas."
+            },
+            {
+                numero: "2º Mandamento",
+                significado: "Não tomarás em vão o nome do Senhor, teu Deus, porque o Senhor não terá por inocente o que tomar o seu nome em vão. — O que significa isso? Devemos temer e amar a Deus e, portanto, em seu nome não amaldiçoar, jurar, praticar a feitiçaria, mentir ou enganar; mas devemos invocá-lo em todas as necessidades, orar, louvar e agradecer."
+            },
+            {
+                numero: "3º Mandamento",
+                significado: "Santificarás o dia do descanso. — O que significa isso? Devemos temer e amar a Deus e, portanto, não desprezar a pregação e a sua palavra; mas devemos considerá-la santa, gostar de a ouvir e estudar."
+            },
+            {
+                numero: "4º Mandamento",
+                significado: "Honrarás a teu pai e a tua mãe, para que vás bem e vivas muito tempo sobre a terra. — O que significa isso? Devemos temer e amar a Deus e, portanto, não desprezar, nem irritar nossos pais e superiores; mas devemos honrá-los, servi-los, obedecer-lhes, amá-los e querer-lhes bem."
+            },
+            {
+                numero: "5º Mandamento",
+                significado: "Não matarás. — O que significa isso? Devemos temer e amar a Deus e, portanto, não causar dano ou mal algum ao nosso próximo em seu corpo; mas devemos ajudá-lo e favorecê-lo em todas as necessidades corporais."
+            },
+            {
+                numero: "6º Mandamento",
+                significado: "Não cometerás adultério. — O que significa isso? Devemos temer e amar a Deus e, portanto, viver uma vida casta e decente em palavras e ações, e cada qual ame e honre seu consorte."
+            },
+            {
+                numero: "7º Mandamento",
+                significado: "Não furtarás. — O que significa isso? Devemos temer e amar a Deus e, portanto, não tirar ao nosso próximo o dinheiro ou os bens, nem nos apoderar deles por meio de mercadorias falsificadas ou negócios fraudulentos; mas devemos ajudá-lo a melhorar e conservar os seus bens e o seu meio de vida."
+            },
+            {
+                numero: "8º Mandamento",
+                significado: "Não dirás falso testemunho contra o teu próximo. — O que significa isso? Devemos temer e amar a Deus e, portanto, não mentir com falsidade, trair, caluniar ou difamar o próximo; mas devemos desculpá-lo, falar bem dele e interpretar tudo da melhor maneira."
+            },
+            {
+                numero: "9º Mandamento",
+                significado: "Não cobiçarás a casa do teu próximo. — O que significa isso? Devemos temer e amar e Deus e, portanto, não pretender adquirir, com astúcia, a herança ou a casa do próximo, nem nos apoderar dela sob aparência de direito; mas devemos ajudá-lo e servi-lo para conservá-la."
+            },
+            {
+                numero: "10º Mandamento",
+                significado: "Não cobiçarás a mulher do teu próximo, nem os seus empregados, nem o seu gado, nem coisa alguma que lhe pertença. — O que significa isso? Devemos temer e amar a Deus e, portanto, não apartar, desviar ou aliciar a mulher do próximo, os seus empregados ou o seu gado; mas devemos aconselhá-los para que fiquem e cumpram o seu dever."
+            }
+        ];
+
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let attempts = 0;
+        let canFlip = true;
+
+        function createCard(content, type, index) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.type = type;
+            card.dataset.index = index;
+            card.innerHTML = `
+            <div class="card-face back">?</div>
+            <div class="card-face front">${content}</div>
+        `;
+            return card;
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function flipCard(card) {
+            if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                attempts++;
+                document.getElementById('attempts').textContent = attempts;
+
+                const card1Index = parseInt(flippedCards[0].dataset.index);
+                const card2Index = parseInt(flippedCards[1].dataset.index);
+
+                if (card1Index === card2Index) {
+                    // Match found
+                    flippedCards.forEach(card => {
+                        card.classList.add('matched');
+                    });
+                    matchedPairs++;
+
+                    if (matchedPairs === mandamentos.length) {
+                        setTimeout(showWinModal, 500);
+                    }
+
+                    canFlip = true;
+                    flippedCards = [];
+                } else {
+                    // No match
+                    flippedCards.forEach(card => {
+                        card.classList.add('wrong');
+                    });
+                    setTimeout(() => {
+                        flippedCards.forEach(card => {
+                            card.classList.remove('flipped');
+                            card.classList.remove('wrong');
+                        });
+                        flippedCards = [];
+                        canFlip = true;
+                    }, 1000);
+                }
+            }
+        }
+
+        function showWinModal() {
+            const modal = document.getElementById('winModal');
+            document.getElementById('finalAttempts').textContent = attempts;
+            modal.style.display = 'flex';
+        }
+
+        function resetGame() {
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.innerHTML = '';
+            flippedCards = [];
+            matchedPairs = 0;
+            attempts = 0;
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('winModal').style.display = 'none';
+            initGame();
+        }
+
+        function initGame() {
+            const gameContainer = document.getElementById('gameContainer');
+            const cards = [];
+
+            mandamentos.forEach((mandamento, index) => {
+                cards.push(createCard(mandamento.numero, 'numero', index));
+                cards.push(createCard(mandamento.significado, 'significado', index));
+            });
+
+            shuffle(cards).forEach(card => {
+                card.addEventListener('click', () => flipCard(card));
+                gameContainer.appendChild(card);
+            });
+        }
+
+        initGame();
+    </script>
+</body>
+
+</html>

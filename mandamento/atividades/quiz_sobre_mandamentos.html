@@ -1,0 +1,719 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #0a1128, #1c2541, #3a506b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .quiz-container {
+            background: rgba(28, 37, 65, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 700px;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+
+        .quiz-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #fff;
+            font-weight: 600;
+            line-height: 1.4;
+            border-left: 5px solid #1a936f;
+            padding-left: 20px;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 2px solid #3a506b;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            background: rgba(28, 37, 65, 0.8);
+        }
+
+        .option:hover {
+            background: #1c2541;
+            border-color: #1a936f;
+        }
+
+        .option.selected {
+            background: #1c2541;
+            border-color: #1a936f;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #1a936f;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .option:hover::before {
+            transform: scaleY(1);
+        }
+
+        .option.correct {
+            background: #1a936f;
+            color: white;
+            border-color: #1a936f;
+            animation: correct 0.5s ease forwards;
+        }
+
+        .option.wrong {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            animation: wrong 0.5s ease forwards;
+        }
+
+        @keyframes correct {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes wrong {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(10px);
+            }
+
+            75% {
+                transform: translateX(-10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #0b525b, #1a936f);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        button:hover:not(:disabled) {
+            background: linear-gradient(45deg, #1a936f, #0b525b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .score {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: 600;
+            background: #1c2541;
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #1a936f, #0b525b);
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .restart-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #0b525b, #1a936f);
+        }
+
+        .results-container {
+            text-align: center;
+        }
+
+        .final-score {
+            font-size: 2rem;
+            color: #1a936f;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 20px;
+            }
+
+            .question {
+                font-size: 1.2rem;
+            }
+
+            .option {
+                padding: 15px;
+                font-size: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .score {
+                order: -1;
+            }
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(28, 37, 65, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 300px;
+            transform: translateX(320px);
+            transition: transform 0.3s ease;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .admin-panel.open {
+            transform: translateX(0);
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 320px;
+            background: #1a936f;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease;
+        }
+
+        .admin-toggle.open {
+            right: 320px;
+        }
+
+        .admin-toggle.closed {
+            right: 20px;
+        }
+
+        .admin-panel h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3a506b;
+            padding-bottom: 10px;
+        }
+
+        .admin-option {
+            margin: 10px 0;
+        }
+
+        .admin-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #1a936f;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-toggle closed">⚙️</div>
+    <div class="admin-panel">
+        <h3>Configurações de Administrador</h3>
+        <div class="admin-option">
+            <label class="switch">
+                <input type="checkbox" id="show-answers" checked>
+                <span class="slider"></span>
+            </label>
+            <span>Mostrar Respostas Corretas Imediatamente</span>
+        </div>
+        <div class="admin-option">
+            <label class="switch">
+                <input type="checkbox" id="shuffle-questions">
+                <span class="slider"></span>
+            </label>
+            <span>Embaralhar Perguntas</span>
+        </div>
+        <div class="admin-option">
+            <label class="switch">
+                <input type="checkbox" id="shuffle-options">
+                <span class="slider"></span>
+            </label>
+            <span>Embaralhar Opções</span>
+        </div>
+    </div>
+
+    <div class="quiz-container">
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="controls">
+            <div class="score">Pontuação: <span id="score">0</span></div>
+            <button id="next-btn" disabled>Próxima Pergunta</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = {
+            "questions": [
+                {
+                    "question": "De acordo com o primeiro mandamento, 'Eu sou o Senhor, teu Deus. Não terás outros deuses diante de mim', como devemos entender o conceito de 'outros deuses'?",
+                    "options": [
+                        "Qualquer coisa que coloque Deus em segundo plano em nossas vidas",
+                        "Somente os ídolos de ouro ou madeira",
+                        "Qualquer outra religião",
+                        "Apenas quando negamos a existência de Deus"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "No segundo mandamento, somos advertidos a não tomar em vão o nome do Senhor. Qual seria uma aplicação prática deste mandamento na vida diária?",
+                    "options": [
+                        "Evitar o uso do nome de Deus em juramentos e expressões vazias",
+                        "Somente utilizar o nome de Deus em momentos de ira",
+                        "Evitar toda e qualquer menção do nome de Deus",
+                        "Proclamar o nome de Deus apenas em templos e igrejas"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "No terceiro mandamento, 'Santificarás o dia do descanso', como a compreensão luterana vê a prática de santificar o domingo?",
+                    "options": [
+                        "Dedicar-se à Palavra de Deus, ouvindo a pregação e estudando a Escritura",
+                        "Apenas se abster de atividades físicas e trabalhos",
+                        "Frequentar o culto regularmente sem qualquer outra prática",
+                        "Estar em silêncio e reflexão o dia inteiro"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O quarto mandamento ordena: 'Honrarás a teu pai e a tua mãe'. De que forma isso se aplica às figuras de autoridade fora do círculo familiar, segundo Lutero?",
+                    "options": [
+                        "Devemos respeito e obediência às autoridades civis e eclesiásticas, pois são instituídas por Deus",
+                        "Somente aos nossos pais, pois apenas eles têm autoridade direta sobre nós",
+                        "Devemos obedecer a todos, independentemente de suas atitudes",
+                        "Este mandamento não se aplica às autoridades fora do ambiente familiar"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "No quinto mandamento, 'Não matarás', qual é a ênfase dada por Lutero em relação ao cuidado com o próximo?",
+                    "options": [
+                        "Não apenas evitar matar, mas também amparar e auxiliar o próximo em suas necessidades físicas e emocionais",
+                        "Apenas abster-se de tirar a vida de outra pessoa",
+                        "Defender o próximo fisicamente contra qualquer ameaça",
+                        "Evitar apenas o assassinato intencional"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O sexto mandamento, 'Não cometerás adultério', inclui não apenas a fidelidade conjugal. Como Lutero aplica este mandamento à vida cristã em geral?",
+                    "options": [
+                        "Chama-nos a viver de forma casta e decente, honrando tanto o casamento quanto a pureza de pensamento e ação",
+                        "Refere-se apenas à proibição de relações extraconjugais",
+                        "Exige que sejamos castos somente dentro do casamento",
+                        "Permite liberdade pessoal desde que não interfira no casamento de outras pessoas"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O sétimo mandamento diz: 'Não furtarás'. Como este mandamento se estende além do roubo físico?",
+                    "options": [
+                        "Inclui não enganar o próximo em negócios e ajudá-lo a preservar seus bens e recursos",
+                        "Refere-se apenas a não roubar diretamente",
+                        "Permite que tiremos do próximo desde que este tenha em abundância",
+                        "Reforça a importância de doar aos pobres"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O oitavo mandamento nos instrui a não levantar falso testemunho. Que implicações práticas Lutero vê no conceito de 'falso testemunho'?",
+                    "options": [
+                        "Não caluniar, trair ou difamar o próximo, mas sempre defendê-lo e interpretar suas ações com benevolência",
+                        "Apenas evitar mentir em tribunais ou lugares públicos",
+                        "Usar a verdade em nosso favor, mesmo que prejudique outros",
+                        "Somente não criar falsas acusações contra pessoas inocentes"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O nono mandamento, 'Não cobiçarás a casa do teu próximo', aborda o desejo de adquirir o que pertence ao próximo. Como podemos aplicar este mandamento em relação à nossa ambição e conduta?",
+                    "options": [
+                        "Devemos nos contentar com o que temos e evitar esquemas para obter o que pertence ao próximo",
+                        "Não desejar absolutamente nada que esteja fora do nosso alcance",
+                        "Fazer o que for necessário para ter sucesso, independentemente de quem se prejudique",
+                        "Apenas evitar invejar bens materiais de familiares"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "O décimo mandamento, 'Não cobiçarás a mulher do teu próximo, nem coisa alguma que lhe pertença', alerta contra o desejo de tirar algo do próximo. Como isso reforça o respeito às relações e bens alheios?",
+                    "options": [
+                        "Devemos não apenas evitar a cobiça, mas também promover a fidelidade e o compromisso nas relações e no respeito ao que pertence ao próximo",
+                        "Impede qualquer sentimento de admiration por bens ou pessoas do próximo",
+                        "Este mandamento é apenas um complemento do nono, sem importância adicional",
+                        "Permite desejar o que pertence ao próximo desde que não seja solicitado explicitamente"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "Ao final dos Dez Mandamentos, Deus afirma ser zeloso e promete castigo e misericórdia conforme nossa obediência ou desobediência. Como essa declaração nos instrui a viver diante de Deus?",
+                    "options": [
+                        "Ela nos leva a temer a ira de Deus, mas também a confiar em sua graça, buscando cumprir seus mandamentos por amor",
+                        "Ela nos assusta para que nunca erremos",
+                        "Ela nos instrui a viver em obediência cega, independentemente de entendimento",
+                        "Ela nos motiva a seguir os mandamentos apenas para evitar o castigo"
+                    ],
+                    "correctAnswer": 0
+                },
+                {
+                    "question": "Que incentivo encontramos na promessa de Deus de 'misericórdia até mil gerações' para aqueles que o amam e guardam seus mandamentos?",
+                    "options": [
+                        "Ela nos encoraja a buscar uma vida de fidelidade e amor a Deus, sabendo que Ele abençoa aqueles que cumprem Sua vontade",
+                        "Significa que seremos recompensados financeiramente",
+                        "Implica que seremos sempre poupados de dificuldades",
+                        "Significa que devemos viver em constante medo para alcançar o favor de Deus"
+                    ],
+                    "correctAnswer": 0
+                }
+            ]
+        };
+
+        class QuizApp {
+            constructor(quizData) {
+                this.quizData = quizData;
+                this.currentQuestion = 0;
+                this.score = 0;
+                this.currentSelectedAnswer = null;
+                this.correctAnswer = null;
+
+                // Elements
+                this.questionEl = document.getElementById('question');
+                this.optionsEl = document.getElementById('options');
+                this.nextBtn = document.getElementById('next-btn');
+                this.scoreEl = document.getElementById('score');
+
+                // Admin panel
+                this.showAnswersImmediately = true;
+                this.shuffleQuestions = false;
+                this.shuffleOptions = false;
+
+                // Admin panel elements
+                this.adminToggle = document.querySelector('.admin-toggle');
+                this.adminPanel = document.querySelector('.admin-panel');
+                this.showAnswersCheckbox = document.getElementById('show-answers');
+                this.shuffleQuestionsCheckbox = document.getElementById('shuffle-questions');
+                this.shuffleOptionsCheckbox = document.getElementById('shuffle-options');
+
+                // Admin panel event listeners
+                this.adminToggle.addEventListener('click', () => {
+                    this.adminPanel.classList.toggle('open');
+                    this.adminToggle.classList.toggle('open');
+                    this.adminToggle.classList.toggle('closed');
+                });
+
+                this.showAnswersCheckbox.addEventListener('change', (e) => {
+                    this.showAnswersImmediately = e.target.checked;
+                });
+
+                this.shuffleQuestionsCheckbox.addEventListener('change', (e) => {
+                    this.shuffleQuestions = e.target.checked;
+                    this.restart();
+                });
+
+                this.shuffleOptionsCheckbox.addEventListener('change', (e) => {
+                    this.shuffleOptions = e.target.checked;
+                    this.loadQuestion();
+                });
+
+                // Event Listeners
+                this.nextBtn.addEventListener('click', () => this.nextQuestion());
+
+                // Initialize
+                this.loadQuestion();
+                this.adminToggle.classList.add('closed');
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            loadQuestion() {
+                this.nextBtn.disabled = true;
+                this.currentSelectedAnswer = null;
+                this.correctAnswer = null;
+
+                const questionData = { ...this.quizData.questions[this.currentQuestion] };
+                this.questionEl.textContent = questionData.question;
+
+                let correctOption = questionData.options[questionData.correctAnswer];
+                let options = [...questionData.options];
+
+                if (this.shuffleOptions) {
+                    options = this.shuffleArray([...options]);
+                }
+
+                this.optionsEl.innerHTML = '';
+                options.forEach((option, index) => {
+                    const button = document.createElement('div');
+                    button.className = 'option';
+                    button.textContent = option;
+                    // Find the new index of the correct answer after shuffling
+                    const actualCorrectIndex = options.indexOf(correctOption);
+                    button.addEventListener('click', () => this.checkAnswer(index, actualCorrectIndex));
+                    this.optionsEl.appendChild(button);
+                });
+            }
+
+            checkAnswer(selectedIndex, correctIndex) {
+                const options = this.optionsEl.children;
+
+                // If immediate feedback is enabled or this option is already selected, do nothing
+                if (this.showAnswersImmediately && this.currentSelectedAnswer !== null) {
+                    return;
+                }
+
+                // Clear previous selections
+                Array.from(options).forEach(option => {
+                    option.classList.remove('selected', 'correct', 'wrong');
+                });
+
+                // Add selected class to current choice
+                options[selectedIndex].classList.add('selected');
+
+                // Show correct/wrong if immediate feedback is enabled
+                if (this.showAnswersImmediately) {
+                    if (selectedIndex === correctIndex) {
+                        options[selectedIndex].classList.add('correct');
+                    } else {
+                        options[selectedIndex].classList.add('wrong');
+                        options[correctIndex].classList.add('correct');
+                    }
+                }
+
+                this.nextBtn.disabled = false;
+                this.currentSelectedAnswer = selectedIndex;
+                this.correctAnswer = correctIndex;
+            }
+
+            nextQuestion() {
+                // Update score based on final selection before moving to next question
+                if (this.currentSelectedAnswer === this.correctAnswer) {
+                    this.score++;
+                    this.scoreEl.textContent = this.score;
+                }
+
+                this.currentQuestion++;
+
+                if (this.currentQuestion < this.quizData.questions.length) {
+                    this.loadQuestion();
+                } else {
+                    this.showResults();
+                }
+            }
+
+            restart() {
+                this.currentQuestion = 0;
+                this.score = 0;
+                this.currentSelectedAnswer = null;
+                this.scoreEl.textContent = '0';
+                this.nextBtn.style.display = 'block';
+
+                if (this.shuffleQuestions) {
+                    this.quizData = {
+                        questions: this.shuffleArray([...this.quizData.questions])
+                    };
+                }
+
+                this.loadQuestion();
+            }
+
+            showResults() {
+                const totalQuestions = this.quizData.questions.length;
+                let resultsHTML = `
+            <div class="results-container">
+              <div class="final-score">Pontuação Final: ${this.score}/${totalQuestions}</div>
+          `;
+
+                if (!this.showAnswersImmediately) {
+                    resultsHTML += `<div class="question-review">`;
+                    this.quizData.questions.forEach((q, i) => {
+                        resultsHTML += `
+                <div class="review-item">
+                  <p><strong>Pergunta ${i + 1}:</strong> ${q.question}</p>
+                  <p class="correct-answer">Resposta Correta: ${q.options[q.correctAnswer]}</p>
+                </div>
+              `;
+                    });
+                    resultsHTML += `</div>`;
+                }
+
+                resultsHTML += `<button class="restart-btn" onclick="restartQuiz()">Reiniciar Quiz</button>
+            </div>`;
+
+                this.optionsEl.innerHTML = resultsHTML;
+                this.questionEl.textContent = 'Quiz Finalizado!';
+                this.nextBtn.style.display = 'none';
+            }
+        }
+
+        let quiz = new QuizApp(quizData);
+
+        function restartQuiz() {
+            quiz.restart();
+        }
+
+        function loadNewQuiz(jsonData) {
+            quiz = new QuizApp(JSON.parse(jsonData));
+        }
+    </script>
+</body>
+
+</html>

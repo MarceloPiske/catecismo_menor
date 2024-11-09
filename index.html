@@ -1,0 +1,615 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Catecismo Menor de Lutero - Guia completo para compreender e viver a fé cristã através de lições, orações e ensinamentos fundamentais da fé luterana.">
+    <meta name="keywords"
+        content="Catecismo Menor, Lutero, Luteranismo, Dez Mandamentos, Credo, Pai Nosso, Santo Batismo, Santa Ceia, Orações, Fé Cristã">
+    <meta name="author" content="Igreja Luterana">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Catecismo Menor de Lutero">
+    <meta property="og:description"
+        content="Guia completo para compreender e viver a fé cristã através de lições, orações e ensinamentos fundamentais da fé luterana.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com">
+    <meta property="og:image" content="https://example.com/catecismo-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Catecismo Menor de Lutero">
+    <meta name="twitter:description"
+        content="Guia completo para compreender e viver a fé cristã através de lições, orações e ensinamentos fundamentais da fé luterana.">
+    <meta name="twitter:image" content="https://example.com/catecismo-image.jpg">
+    <link rel="canonical" href="https://example.com">
+    <title>Catecismo Menor de Lutero | Guia Completo da Fé Cristã</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a192f;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(45deg, #0a192f, #112240);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #64ffda;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .quest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .quest-card {
+            background: #112240;
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #64ffda;
+        }
+
+        .quest-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(100, 255, 218, 0.3);
+        }
+
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        .quest-title {
+            font-size: 1.5em;
+            color: #64ffda;
+            margin-bottom: 15px;
+        }
+
+        .quest-description {
+            color: #fff;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #0a192f;
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #64ffda, #00b4d8);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .quest-level {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #64ffda;
+            color: #0a192f;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .start-button {
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 47, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #112240;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            border: 2px solid #64ffda;
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.05);
+        }
+
+        .close-commandments {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 1001;
+        }
+
+        .close-commandments:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
+        }
+
+        .commandments-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 47, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .commandments-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #112240;
+            border-radius: 15px;
+            border: 2px solid #64ffda;
+        }
+
+        .commandment-card {
+            background: #1d3557;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #64ffda;
+            transition: transform 0.3s ease;
+        }
+
+        .commandment-card:hover {
+            transform: translateX(10px);
+            background: #2a4674;
+        }
+
+        .commandment-number {
+            color: #64ffda;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .commandment-title {
+            color: #fff;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .commandment-explanation {
+            color: #a8b2d1;
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .mnemonic {
+            font-style: italic;
+            color: #00b4d8;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 5px;
+        }
+
+        .memory-tip {
+            background: #233554;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #a8b2d1;
+        }
+
+        .conclusion-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #1d3557;
+            border-radius: 10px;
+            border-left: 4px solid #64ffda;
+        }
+
+        .explanation-card {
+            background: #233554;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .extra-questions {
+            margin-top: 30px;
+        }
+
+        .question-card {
+            background: #233554;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b4d8;
+        }
+
+        .question-card h4 {
+            color: #64ffda;
+            margin: 0 0 10px 0;
+        }
+
+        .quiz-button {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .quiz-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="modal" id="developmentModal">
+        <div class="modal-content">
+            <h2 style="color: #64ffda;">Em Desenvolvimento</h2>
+            <p>Esta funcionalidade ainda está em desenvolvimento. Agradecemos sua compreensão!</p>
+            <button class="close-modal">Fechar</button>
+        </div>
+    </div>
+
+    <div class="commandments-modal" id="commandmentsModal">
+        <button class="close-commandments">Fechar</button>
+        <div class="commandments-content">
+            <h2 style="color: #64ffda; text-align: center; margin-bottom: 30px;">Os Dez Mandamentos</h2>
+
+            <div class="commandment-card">
+                <div class="commandment-number">1º Mandamento</div>
+                <div class="commandment-title">Eu sou o Senhor, teu Deus. Não terás outros deuses diante de mim.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e confiar nele
+                    acima de todas as coisas.</div>
+                <div class="memory-tip">💡 Lembre: Deus é único e primeiro em tudo!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">2º Mandamento</div>
+                <div class="commandment-title">Não tomarás em vão o nome do Senhor, teu Deus, porque o Senhor não terá
+                    por inocente o que tomar o seu nome em vão.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, em
+                    seu nome não amaldiçoar, jurar, praticar a feitiçaria, mentir ou enganar; mas devemos invocá-lo em
+                    todas as necessidades, orar, louvar e agradecer.</div>
+                <div class="memory-tip">💡 O nome de Deus é santo - use com respeito!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">3º Mandamento</div>
+                <div class="commandment-title">Santificarás o dia do descanso.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    desprezar a pregação e a sua palavra; mas devemos considerá-la santa, gostar de a ouvir e estudar.
+                </div>
+                <div class="memory-tip">💡 Reserve um tempo para louvar Deus!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">4º Mandamento</div>
+                <div class="commandment-title">Honrarás a teu pai e a tua mãe, para que vás bem e vivas muito tempo
+                    sobre a terra.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    desprezar, nem irritar nossos pais e superiores; mas devemos honrá-los, servi-los, obedecer-lhes,
+                    amá-los e querer-lhes bem.</div>
+                <div class="memory-tip">💡 Respeito e amor pelos pais são fundamentais!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">5º Mandamento</div>
+                <div class="commandment-title">Não matarás.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    causar dano ou mal algum ao nosso próximo em seu corpo; mas devemos ajudá-lo e favorecê-lo em todas
+                    as necessidades corporais.</div>
+                <div class="memory-tip">💡 A vida é preciosa - proteja-a!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">6º Mandamento</div>
+                <div class="commandment-title">Não cometerás adultério.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto,
+                    viver uma vida casta e decente em palavras e ações, e cada qual ame e honre seu consorte.</div>
+                <div class="memory-tip">💡 Fidelidade é um valor essencial!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">7º Mandamento</div>
+                <div class="commandment-title">Não furtarás.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    tirar ao nosso próximo o dinheiro ou os bens, nem nos apoderar deles por meio de mercadorias
+                    falsificadas ou negócios fraudulentos; mas devemos ajudá-lo a melhorar e conservar os seus bens e o
+                    seu meio de vida.</div>
+                <div class="memory-tip">💡 Valorize o que é correto - não roube!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">8º Mandamento</div>
+                <div class="commandment-title">Não dirás falso testemunho contra teu próximo.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    mentir com falsidade, trair, caluniar ou difamar o próximo; mas devemos desculpá-lo, falar bem dele
+                    e interpretar tudo da melhor maneira.</div>
+                <div class="memory-tip">💡 Honestidade é a melhor política!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">9º Mandamento</div>
+                <div class="commandment-title">Não cobiçarás a casa do teu próximo.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar e Deus e, portanto, não
+                    pretender adquirir, com astúcia, a herança ou a casa do próximo, nem nos apoderar dela sob aparência
+                    de direito; mas devemos ajudá-lo e servi-lo para conservá-la.</div>
+                <div class="memory-tip">💡 A gratidão é o caminho para a felicidade!</div>
+            </div>
+
+            <div class="commandment-card">
+                <div class="commandment-number">10º Mandamento</div>
+                <div class="commandment-title">Não cobiçarás a mulher do teu próximo, nem os seus empregados, nem o seu
+                    gado, nem coisa alguma que lhe pertença.</div>
+                <div class="commandment-explanation">O que significa isso? Devemos temer e amar a Deus e, portanto, não
+                    apartar, desviar ou aliciar a mulher do próximo, os seus empregados ou o seu gado; mas devemos
+                    aconselhá-los para que fiquem e cumpram o seu dever.</div>
+                <div class="memory-tip">💡 A satisfação é uma virtude!</div>
+            </div>
+
+            <div class="conclusion-section">
+                <h3 style="color: #64ffda;">O que diz Deus de todos esses mandamentos?</h3>
+                <p>"Eu, o Senhor teu Deus, sou Deus zeloso, que visito a iniquidade dos pais nos filhos até a terceira e
+                    quarta geração daqueles que me aborrecem, e faço misericórdia até mil gerações daqueles que me amam
+                    e guardam os meus mandamentos."</p>
+
+                <div class="explanation-card">
+                    <h4>O que significa isso?</h4>
+                    <p>Deus ameaça castigar todos os que transgridem estes mandamentos; por isso devemos temer a sua ira
+                        e não transgredi-los. Mas ele promete graça e todo o bem aos que os guardam. Por isso mesmo
+                        devemos amá-lo, confiar nele e de boa vontade cumprir os seus mandamentos.</p>
+                </div>
+
+                <div class="extra-questions">
+                    <div class="question-card">
+                        <h4>Por que Deus é chamado de "zeloso" nesta passagem?</h4>
+                        <p>Porque Ele cuida com amor de Seu povo e não aceita que demos a outro o amor e a confiança que
+                            pertencem somente a Ele.</p>
+                    </div>
+
+                    <div class="question-card">
+                        <h4>O que significa Deus fazer "misericórdia até mil gerações"?</h4>
+                        <p>Mostra que a misericórdia de Deus é muito maior que Sua ira, pois Sua punição vai até a
+                            terceira ou quarta geração, mas Sua misericórdia alcança mil gerações!</p>
+                    </div>
+                </div>
+                <a href="./mandamento/atividades/quiz_sobre_mandamentos.html" class="quiz-button">
+                    Teste seus conhecimentos!
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Jornada do Catecismo</h1>
+            <p>Explore as verdades eternas da fé luterana em uma incrível aventura!</p>
+        </div>
+
+        <div class="quest-grid">
+            <div class="quest-card">
+                <span class="quest-level">Nível 1</span>
+                <h2 class="quest-title">Os Dez Mandamentos</h2>
+                <p class="quest-description">Descubra como Deus nos guia através de Sua santa Lei e por que precisamos
+                    de Jesus como nosso Salvador. Uma aventura pela Lei e pelo Evangelho!</p>
+                <button class="start-button">Iniciar Missão</button>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <span class="quest-level">Nível 2</span>
+                <h2 class="quest-title">O Credo Apostólico</h2>
+                <p class="quest-description">Embarque em uma jornada pela confissão histórica da fé cristã, aprendendo
+                    sobre o Deus Triúno e Sua obra maravilhosa de salvação!</p>
+                <button class="start-button">Iniciar Missão</button>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <span class="quest-level">Nível 3</span>
+                <h2 class="quest-title">O Pai Nosso</h2>
+                <p class="quest-description">Aprenda como Jesus nos ensinou a orar e descubra o significado profundo de
+                    cada petição desta oração especial!</p>
+                <button class="start-button">Iniciar Missão</button>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <span class="quest-level">Nível 4</span>
+                <h2 class="quest-title">O Santo Batismo</h2>
+                <p class="quest-description">Explore o maravilhoso sacramento do Batismo, onde Deus nos adota como Seus
+                    filhos e nos dá o dom da fé!</p>
+                <button class="start-button">Iniciar Missão</button>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <span class="quest-level">Nível 5</span>
+                <h2 class="quest-title">A Santa Ceia</h2>
+                <p class="quest-description">Descubra o incrível presente que Jesus nos deixou: Seu verdadeiro corpo e
+                    sangue para perdão dos nossos pecados!</p>
+                <button class="start-button">Iniciar Missão</button>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.quest-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+
+            const progress = card.querySelector('.progress');
+            progress.style.width = Math.random() * 30 + '%';
+        });
+
+        document.querySelectorAll('.start-button').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const card = this.closest('.quest-card');
+                const title = card.querySelector('.quest-title').textContent;
+
+                if (title === "Os Dez Mandamentos") {
+                    document.getElementById('commandmentsModal').style.display = 'block';
+                } else {
+                    const modal = document.getElementById('developmentModal');
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+
+        document.querySelector('.close-modal').addEventListener('click', function () {
+            document.getElementById('developmentModal').style.display = 'none';
+        });
+
+        document.querySelector('.close-commandments').addEventListener('click', function () {
+            document.getElementById('commandmentsModal').style.display = 'none';
+        });
+
+        document.querySelectorAll('.quest-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

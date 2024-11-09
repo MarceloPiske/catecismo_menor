@@ -1,0 +1,362 @@
+<html>
+
+<head>
+    <base href="https://example.com/">
+    <title>Quiz dos Dez Mandamentos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+
+        .mandamentos,
+        .significados {
+            flex: 1;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .draggable {
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: grab;
+            background: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .draggable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #2196f3;
+        }
+
+        .draggable.dragging {
+            opacity: 0.8;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .draggable.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .droppable {
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px dashed #bdbdbd;
+            border-radius: 10px;
+            background: #fafafa;
+            min-height: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .droppable:hover {
+            background: #f5f5f5;
+            border-color: #90caf9;
+        }
+
+        .correct-match {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            animation: pulse 1s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .error-message {
+            color: #f44336;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #ffebee;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .success-message {
+            color: #2e7d32;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #e8f5e9;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: #1565c0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: #1565c0;
+            margin: 10px auto 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="mandamentos">
+            <h2>Mandamentos</h2>
+            <div id="error-message" class="error-message">Combinação incorreta. Tente novamente!</div>
+            <div id="success-message" class="success-message">Combinação correta!</div>
+        </div>
+        <div class="significados">
+            <h2>Significados</h2>
+        </div>
+    </div>
+
+    <script>
+        const mandamentos = [
+            {
+                texto: "Eu sou o Senhor, teu Deus. Não terás outros deuses diante de mim.",
+                significado: "Devemos temer e amar a Deus e confiar nele acima de todas as coisas.",
+                numero: 1
+            },
+            {
+                texto: "Não tomarás em vão o nome do Senhor, teu Deus.",
+                significado: "Devemos temer e amar a Deus e, portanto, em seu nome não amaldiçoar, jurar, praticar a feitiçaria, mentir ou enganar; mas devemos invocá-lo em todas as necessidades, orar, louvar e agradecer.",
+                numero: 2
+            },
+            {
+                texto: "Santificarás o dia do descanso.",
+                significado: "Devemos temer e amar a Deus e, portanto, não desprezar a pregação e a sua palavra; mas devemos considerá-la santa, gostar de a ouvir e estudar.",
+                numero: 3
+            },
+            {
+                texto: "Honrarás a teu pai e a tua mãe, para que vás bem e vivas muito tempo sobre a terra.",
+                significado: "Devemos temer e amar a Deus e, portanto, não desprezar, nem irritar nossos pais e superiores; mas devemos honrá-los, servi-los, obedecer-lhes, amá-los e querer-lhes bem.",
+                numero: 4
+            },
+            {
+                texto: "Não matarás.",
+                significado: "Devemos temer e amar a Deus e, portanto, não causar dano ou mal algum ao nosso próximo em seu corpo; mas devemos ajudá-lo e favorecê-lo em todas as necessidades corporais.",
+                numero: 5
+            },
+            {
+                texto: "Não cometerás adultério.",
+                significado: "Devemos temer e amar a Deus e, portanto, viver uma vida casta e decente em palavras e ações, e cada qual ame e honre seu consorte.",
+                numero: 6
+            },
+            {
+                texto: "Não furtarás.",
+                significado: "Devemos temer e amar a Deus e, portanto, não tirar ao nosso próximo o dinheiro ou os bens, nem nos apoderar deles por meio de mercadorias falsificadas ou negócios fraudulentos; mas devemos ajudá-lo a melhorar e conservar os seus bens e o seu meio de vida.",
+                numero: 7
+            },
+            {
+                texto: "Não dirás falso testemunho contra o teu próximo.",
+                significado: "Devemos temer e amar a Deus e, portanto, não mentir com falsidade, trair, caluniar ou difamar o próximo; mas devemos desculpá-lo, falar bem dele e interpretar tudo da melhor maneira.",
+                numero: 8
+            },
+            {
+                texto: "Não cobiçarás a casa do teu próximo.",
+                significado: "Devemos temer e amar e Deus e, portanto, não pretender adquirir, com astúcia, a herança ou a casa do próximo, nem nos apoderar dela sob aparência de direito; mas devemos ajudá-lo e servi-lo para conservá-la.",
+                numero: 9
+            },
+            {
+                texto: "Não cobiçarás a mulher do teu próximo, nem os seus empregados, nem o seu gado, nem coisa alguma que lhe pertença.",
+                significado: "Devemos temer e amar a Deus e, portanto, não apartar, desviar ou aliciar a mulher do próximo, os seus empregados ou o seu gado; mas devemos aconselhá-los para que fiquem e cumpram o seu dever.",
+                numero: 10
+            }
+        ];
+
+        function embaralharArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function inicializarQuiz() {
+            const mandamentosContainer = document.querySelector('.mandamentos');
+            const significadosContainer = document.querySelector('.significados');
+            let selectedElement = null;
+
+            // Randomize both commandments and their meanings
+            const mandamentosEmbaralhados = embaralharArray([...mandamentos]);
+            const significadosEmbaralhados = embaralharArray([...mandamentos]);
+
+            // Create draggable commandments
+            mandamentosEmbaralhados.forEach(mandamento => {
+                const draggable = document.createElement('div');
+                draggable.className = 'draggable';
+                draggable.draggable = true;
+                draggable.textContent = mandamento.texto;
+                draggable.dataset.numero = mandamento.numero;
+
+                draggable.addEventListener('click', (e) => {
+                    if (selectedElement) {
+                        selectedElement.classList.remove('selected');
+                    }
+                    if (selectedElement !== draggable) {
+                        draggable.classList.add('selected');
+                        selectedElement = draggable;
+                    } else {
+                        selectedElement = null;
+                    }
+                });
+
+                draggable.addEventListener('dragstart', e => {
+                    draggable.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', mandamento.numero);
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+
+                mandamentosContainer.appendChild(draggable);
+            });
+
+            mandamentos.forEach(mandamento => {
+                const droppable = document.createElement('div');
+                droppable.className = 'droppable';
+                droppable.textContent = mandamento.significado;
+                droppable.dataset.numero = mandamento.numero;
+
+                droppable.addEventListener('click', () => {
+                    if (selectedElement) {
+                        const draggedNumber = parseInt(selectedElement.dataset.numero);
+                        const correctNumber = parseInt(droppable.dataset.numero);
+
+                        if (draggedNumber === correctNumber) {
+                            droppable.appendChild(selectedElement);
+                            droppable.classList.add('correct-match');
+                            selectedElement.classList.add('correct-match');
+                            selectedElement.classList.remove('selected');
+
+                            document.getElementById('success-message').style.display = 'block';
+                            document.getElementById('error-message').style.display = 'none';
+
+                            selectedElement = null;
+                            verificarCompletude();
+                        } else {
+                            document.getElementById('error-message').style.display = 'block';
+                            document.getElementById('success-message').style.display = 'none';
+                        }
+                    }
+                });
+
+                droppable.addEventListener('dragover', e => {
+                    e.preventDefault();
+                });
+
+                droppable.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const draggedNumber = parseInt(e.dataTransfer.getData('text/plain'));
+                    const correctNumber = parseInt(droppable.dataset.numero);
+
+                    if (draggedNumber === correctNumber) {
+                        const draggedElement = document.querySelector('.dragging');
+                        droppable.appendChild(draggedElement);
+                        droppable.classList.add('correct-match');
+                        draggedElement.classList.add('correct-match');
+
+                        document.getElementById('success-message').style.display = 'block';
+                        document.getElementById('error-message').style.display = 'none';
+
+                        verificarCompletude();
+                    } else {
+                        document.getElementById('error-message').style.display = 'block';
+                        document.getElementById('success-message').style.display = 'none';
+                    }
+                });
+
+                significadosContainer.appendChild(droppable);
+            });
+        }
+
+        function verificarCompletude() {
+            const todasCombinacoes = document.querySelectorAll('.droppable');
+            let completo = true;
+
+            todasCombinacoes.forEach(combo => {
+                if (!combo.classList.contains('correct-match')) {
+                    completo = false;
+                }
+            });
+
+            if (completo) {
+                alert('Parabéns! Você completou corretamente todos os mandamentos!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', inicializarQuiz);
+    </script>
+</body>
+
+</html>
